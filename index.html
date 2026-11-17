@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bibliothèque de plans — Shop Titans</title>
 <meta name="robots" content="noindex">
+<meta name="theme-color" content="#14161f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <style>
 :root{
   --fond:#14161f; --panneau:#1d2030; --panneau2:#262a3d; --bord:#33384f;
@@ -540,6 +544,8 @@ sb.auth.onAuthStateChange((evt) => {
   if (evt === "SIGNED_IN" || evt === "SIGNED_OUT") setTimeout(demarrer, 0);
 });
 demarrer();
+
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(e => console.warn("SW", e));
 </script>
 </body>
 </html>
