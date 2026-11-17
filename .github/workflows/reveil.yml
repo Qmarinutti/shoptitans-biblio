@@ -1,13 +1,35 @@
 name: Garder Supabase éveillé
-# Un projet Supabase gratuit est mis en pause après 7 jours sans activité.
+# 1) Un projet Supabase gratuit est mis en pause après 7 jours sans activité -> on lit la base 2 fois par semaine.
+# 2) GitHub désactive les tâches planifiées d'un dépôt public sans commit depuis 60 jours
+#    -> si le dernier commit a plus de 30 jours, on en fait un (fichier .github/derniere-activite.txt).
 on:
   schedule:
     - cron: "17 6 * * 1,4"   # lundi et jeudi, 6h17 UTC
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          curl -fsS "https://xiwfkyjqxjfrvfvrzcuf.supabase.co/rest/v1/plans?select=id&limit=1" \
+      - name: Lire la base Supabase
+        run: |
+          curl -fsS --retry 3 --retry-delay 20 "https://xiwfkyjqxjfrvfvrzcuf.supabase.co/rest/v1/plans?select=id&limit=1" \
             -H "apikey: sb_publishable_g8-zB3m1qjiRBCyvPUtLvg_0nE010pU"
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Commit d'activité si besoin (anti-désactivation GitHub)
+        run: |
+          dernier=$(git log -1 --format=%ct)
+          maintenant=$(date +%s)
+          if [ $(( (maintenant - dernier) / 86400 )) -ge 30 ]; then
+            date -u +"%Y-%m-%dT%H:%M:%SZ" > .github/derniere-activite.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add .github/derniere-activite.txt
+            git commit -m "Activité automatique (garde la tâche planifiée active)"
+            git push
+          else
+            echo "Dernier commit récent, rien à faire."
+          fi
