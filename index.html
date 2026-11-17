@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bibliothèque de plans — Shop Titans</title>
+<meta name="robots" content="noindex">
+<style>
+:root{
+  --fond:#14161f; --panneau:#1d2030; --panneau2:#262a3d; --bord:#33384f;
+  --texte:#e6e8f0; --doux:#9aa0b8; --or:#f0c14b; --vert:#3ecf6e; --rouge:#ef5b5b; --bleu:#5b9bef;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--fond);color:var(--texte);font:15px/1.4 "Segoe UI",system-ui,Arial,sans-serif}
+button,input,select{font:inherit;color:inherit}
+a{color:var(--or)}
+.cache{display:none!important}
+
+/* ---- en-tête ---- */
+header{position:sticky;top:0;z-index:20;background:#0f1118ee;backdrop-filter:blur(6px);border-bottom:1px solid var(--bord)}
+.barre{max-width:1400px;margin:auto;display:flex;align-items:center;gap:12px;padding:10px 16px;flex-wrap:wrap}
+.logo{font-weight:700;font-size:18px;color:var(--or);margin-right:auto;white-space:nowrap}
+.nav button{background:none;border:1px solid transparent;border-radius:8px;padding:6px 12px;cursor:pointer;color:var(--doux)}
+.nav button.actif{color:var(--texte);border-color:var(--bord);background:var(--panneau)}
+.qui{color:var(--doux);font-size:13px}
+.btn{background:var(--panneau2);border:1px solid var(--bord);border-radius:8px;padding:7px 14px;cursor:pointer}
+.btn:hover{border-color:var(--or)}
+.btn.or{background:var(--or);color:#1a1400;border-color:var(--or);font-weight:600}
+.btn.petit{padding:4px 10px;font-size:13px}
+
+main{max-width:1400px;margin:auto;padding:16px}
+
+/* ---- écrans connexion ---- */
+.carte-form{max-width:380px;margin:60px auto;background:var(--panneau);border:1px solid var(--bord);border-radius:14px;padding:24px}
+.carte-form h1{margin:0 0 6px;font-size:22px;color:var(--or)}
+.carte-form p{color:var(--doux);margin:0 0 16px}
+.carte-form label{display:block;font-size:13px;color:var(--doux);margin:12px 0 4px}
+.carte-form input{width:100%;padding:9px 11px;border-radius:8px;border:1px solid var(--bord);background:var(--fond)}
+.carte-form .btn{width:100%;margin-top:18px}
+.lien{background:none;border:none;color:var(--or);cursor:pointer;padding:0;text-decoration:underline}
+.msg{margin-top:12px;font-size:14px;min-height:1.2em}
+.msg.err{color:var(--rouge)} .msg.ok{color:var(--vert)}
+
+/* ---- filtres ---- */
+.titre-vue{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin:4px 0 12px}
+.titre-vue h2{margin:0;font-size:22px}
+.compteur{color:var(--doux)}
+.compteur b{color:var(--vert)}
+.onglets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.onglets button{background:var(--panneau);border:1px solid var(--bord);border-radius:10px;padding:7px 12px;cursor:pointer}
+.onglets button.actif{border-color:var(--or);color:var(--or)}
+.onglets small{color:var(--doux);margin-left:6px}
+.types{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.types button{background:none;border:1px solid var(--bord);border-radius:20px;padding:3px 10px;font-size:13px;cursor:pointer;color:var(--doux)}
+.types button.actif{background:var(--panneau2);color:var(--texte);border-color:var(--doux)}
+.outils{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.outils input[type=search]{flex:1;min-width:200px;padding:8px 11px;border-radius:8px;border:1px solid var(--bord);background:var(--panneau)}
+.outils select{padding:8px;border-radius:8px;border:1px solid var(--bord);background:var(--panneau)}
+.bandeau{background:var(--panneau);border:1px solid var(--bord);border-left:3px solid var(--or);border-radius:8px;padding:8px 12px;margin-bottom:12px;color:var(--doux);font-size:14px}
+
+/* ---- grille de plans ---- */
+.groupe h3{margin:18px 0 8px;font-size:15px;color:var(--doux);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.groupe h3 .n{font-weight:400}
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}
+.plan{position:relative;background:var(--panneau);border:2px solid var(--bord);border-radius:12px;padding:8px 6px 6px;text-align:center;cursor:default;transition:transform .08s,border-color .15s}
+.plan img{width:72px;height:72px;object-fit:contain;display:block;margin:0 auto 4px;filter:grayscale(1) brightness(.6);opacity:.55}
+.plan .nom{font-size:12px;line-height:1.2;color:var(--doux);min-height:2.4em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.plan .tier{position:absolute;top:5px;left:7px;font-size:11px;color:var(--doux)}
+.plan .qui-a{position:absolute;top:3px;right:4px;background:none;border:none;cursor:pointer;font-size:14px;opacity:.6;padding:2px}
+.plan .qui-a:hover{opacity:1}
+.plan.a{border-color:var(--vert);background:linear-gradient(180deg,#1f3a2b,var(--panneau) 70%)}
+.plan.a img{filter:none;opacity:1}
+.plan.a .nom{color:var(--texte)}
+.plan.a::after{content:"✔";position:absolute;bottom:5px;right:7px;color:var(--vert);font-size:13px}
+.editable .plan{cursor:pointer}
+.editable .plan:hover{transform:translateY(-2px);border-color:var(--or)}
+.plan.envoi{opacity:.6}
+.vide{color:var(--doux);padding:30px;text-align:center}
+
+/* ---- joueurs ---- */
+.joueurs{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.joueur{background:var(--panneau);border:1px solid var(--bord);border-radius:12px;padding:12px 14px;cursor:pointer}
+.joueur:hover{border-color:var(--or)}
+.joueur .p{font-weight:600}
+.jauge{height:8px;background:var(--fond);border-radius:4px;margin-top:8px;overflow:hidden}
+.jauge i{display:block;height:100%;background:var(--vert)}
+.joueur small{color:var(--doux)}
+
+/* ---- fenêtre ---- */
+.voile{position:fixed;inset:0;background:#000a;z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}
+.fenetre{background:var(--panneau);border:1px solid var(--bord);border-radius:14px;max-width:420px;width:100%;max-height:80vh;overflow:auto;padding:18px}
+.fenetre h3{margin:0 0 4px}
+.fenetre ul{padding-left:18px}
+.fenetre .ferme{float:right}
+
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--panneau2);border:1px solid var(--bord);padding:9px 16px;border-radius:10px;z-index:60}
+@media (max-width:600px){.grille{grid-template-columns:repeat(auto-fill,minmax(92px,1fr))}.plan img{width:58px;height:58px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="barre">
+    <div class="logo">📜 Bibliothèque de plans</div>
+    <nav class="nav cache" id="nav">
+      <button data-vue="moi" class="actif">Ma bibliothèque</button>
+      <button data-vue="joueurs">Joueurs</button>
+    </nav>
+    <span class="qui" id="qui"></span>
+    <button class="btn petit cache" id="btnDeco">Déconnexion</button>
+  </div>
+</header>
+
+<main>
+  <!-- Connexion / inscription -->
+  <section id="ecranConnexion" class="cache">
+    <div class="carte-form">
+      <h1 id="titreConnexion">Connexion</h1>
+      <p id="sousTitreConnexion">Connecte-toi pour gérer ta bibliothèque.</p>
+      <form id="formConnexion">
+        <label for="email">Adresse e-mail</label>
+        <input id="email" type="email" autocomplete="email" required>
+        <label for="mdp">Mot de passe</label>
+        <input id="mdp" type="password" autocomplete="current-password" minlength="8" required>
+        <button class="btn or" type="submit" id="btnConnexion">Se connecter</button>
+      </form>
+      <div class="msg" id="msgConnexion"></div>
+      <p style="margin-top:16px">
+        <button class="lien" id="basculeInscription">Pas encore de compte ? Créer un compte</button><br>
+        <button class="lien" id="mdpOublie" style="margin-top:6px">Mot de passe oublié</button>
+      </p>
+    </div>
+  </section>
+
+  <!-- Nouveau mot de passe (lien reçu par mail) -->
+  <section id="ecranNouveauMdp" class="cache">
+    <div class="carte-form">
+      <h1>Nouveau mot de passe</h1>
+      <form id="formNouveauMdp">
+        <label for="nouveauMdp">Nouveau mot de passe (8 caractères min.)</label>
+        <input id="nouveauMdp" type="password" autocomplete="new-password" minlength="8" required>
+        <button class="btn or" type="submit">Enregistrer</button>
+      </form>
+      <div class="msg" id="msgNouveauMdp"></div>
+    </div>
+  </section>
+
+  <!-- Rejoindre la guilde -->
+  <section id="ecranGuilde" class="cache">
+    <div class="carte-form">
+      <h1>Rejoindre la guilde</h1>
+      <p>Choisis ton pseudo (celui du jeu) et entre le code de guilde donné par le chef.</p>
+      <form id="formGuilde">
+        <label for="pseudo">Pseudo</label>
+        <input id="pseudo" maxlength="30" minlength="2" required>
+        <label for="code">Code de guilde</label>
+        <input id="code" required autocomplete="off">
+        <button class="btn or" type="submit">Valider</button>
+      </form>
+      <div class="msg" id="msgGuilde"></div>
+    </div>
+  </section>
+
+  <!-- Bibliothèque (la mienne ou celle d'un joueur) -->
+  <section id="ecranBiblio" class="cache">
+    <div class="titre-vue">
+      <h2 id="titreBiblio">Ma bibliothèque</h2>
+      <span class="compteur" id="compteur"></span>
+      <button class="btn petit cache" id="retourJoueurs">← Tous les joueurs</button>
+    </div>
+    <div class="bandeau" id="aide">Clique sur un plan pour le passer en <b style="color:var(--vert)">vert</b> (je l'ai) ou en gris (je ne l'ai pas). 👥 = voir qui l'a dans la guilde.</div>
+    <div class="onglets" id="onglets"></div>
+    <div class="types" id="types"></div>
+    <div class="outils">
+      <input type="search" id="recherche" placeholder="Rechercher un plan (nom FR ou anglais)…">
+      <select id="etat">
+        <option value="tous">Tous</option>
+        <option value="a">Possédés</option>
+        <option value="pas">Manquants</option>
+      </select>
+      <select id="filtreTier"><option value="">Tous les tiers</option></select>
+      <select id="comparer" class="cache">
+        <option value="">Sans comparaison</option>
+        <option value="luiPasMoi">Il l'a, moi non</option>
+        <option value="moiPasLui">Je l'ai, lui non</option>
+      </select>
+    </div>
+    <div id="liste"></div>
+  </section>
+
+  <!-- Liste des joueurs -->
+  <section id="ecranJoueurs" class="cache">
+    <div class="titre-vue"><h2>Joueurs de la guilde</h2><span class="compteur" id="nbJoueurs"></span></div>
+    <div class="outils"><input type="search" id="rechercheJoueur" placeholder="Rechercher un joueur…"></div>
+    <div class="joueurs" id="listeJoueurs"></div>
+  </section>
+</main>
+
+<div class="voile cache" id="voile"><div class="fenetre" id="fenetre"></div></div>
+<div class="toast cache" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
+<script>
+"use strict";
+const SUPABASE_URL = "https://xiwfkyjqxjfrvfvrzcuf.supabase.co";
+const SUPABASE_KEY = "sb_publishable_g8-zB3m1qjiRBCyvPUtLvg_0nE010pU"; // clé publique, protégée par les règles RLS
+const IMG = id => "https://playshoptitans.com/assets/items/" + id + ".png";
+const CATEGORIES = ["Armes", "Armures", "Accessoires", "Pierres", "Enchantements"];
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = id => document.getElementById(id);
+
+const etat = {
+  session: null, profil: null,
+  plans: [], parId: new Map(),
+  mes: new Set(),          // mes plans
+  vu: null,                // {id, pseudo, set} quand on regarde un autre joueur
+  cat: "Armes", type: "", vue: "moi",
+};
+
+/* ---------- utilitaires ---------- */
+function toast(t, ms = 2200) {
+  const el = $("toast"); el.textContent = t; el.classList.remove("cache");
+  clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.add("cache"), ms);
+}
+function montrer(ecran) {
+  for (const id of ["ecranConnexion", "ecranNouveauMdp", "ecranGuilde", "ecranBiblio", "ecranJoueurs"])
+    $(id).classList.toggle("cache", id !== ecran);
+}
+function normaliser(s) { return (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
+function el(tag, props = {}, ...enfants) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === "class") e.className = v; else if (k === "text") e.textContent = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v);
+  }
+  for (const c of enfants) if (c != null) e.append(c);
+  return e;
+}
+// PostgREST renvoie 1000 lignes max : on pagine
+async function tout(fabrique) {
+  const res = []; let i = 0;
+  for (;;) {
+    const { data, error } = await fabrique().range(i, i + 999);
+    if (error) throw error;
+    res.push(...data);
+    if (data.length < 1000) return res;
+    i += 1000;
+  }
+}
+
+/* ---------- authentification ---------- */
+let modeInscription = false;
+$("basculeInscription").onclick = () => {
+  modeInscription = !modeInscription;
+  $("titreConnexion").textContent = modeInscription ? "Créer un compte" : "Connexion";
+  $("sousTitreConnexion").textContent = modeInscription ? "Un e-mail et un mot de passe (8 caractères min.)." : "Connecte-toi pour gérer ta bibliothèque.";
+  $("btnConnexion").textContent = modeInscription ? "Créer mon compte" : "Se connecter";
+  $("basculeInscription").textContent = modeInscription ? "Déjà un compte ? Se connecter" : "Pas encore de compte ? Créer un compte";
+  $("mdp").autocomplete = modeInscription ? "new-password" : "current-password";
+  $("msgConnexion").textContent = "";
+};
+$("formConnexion").onsubmit = async ev => {
+  ev.preventDefault();
+  const m = $("msgConnexion"); m.className = "msg"; m.textContent = "…";
+  const email = $("email").value.trim(), password = $("mdp").value;
+  const { data, error } = modeInscription
+    ? await sb.auth.signUp({ email, password })
+    : await sb.auth.signInWithPassword({ email, password });
+  if (error) { m.className = "msg err"; m.textContent = traduireErreur(error.message); return; }
+  if (modeInscription && !data.session) { m.className = "msg ok"; m.textContent = "Compte créé : valide le lien reçu par e-mail puis connecte-toi."; return; }
+  m.textContent = "";
+};
+$("mdpOublie").onclick = async () => {
+  const m = $("msgConnexion"), email = $("email").value.trim();
+  if (!email) { m.className = "msg err"; m.textContent = "Entre d'abord ton e-mail ci-dessus."; return; }
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+  m.className = error ? "msg err" : "msg ok";
+  m.textContent = error ? traduireErreur(error.message) : "Si ce compte existe, un e-mail de réinitialisation a été envoyé.";
+};
+$("formNouveauMdp").onsubmit = async ev => {
+  ev.preventDefault();
+  const { error } = await sb.auth.updateUser({ password: $("nouveauMdp").value });
+  const m = $("msgNouveauMdp");
+  if (error) { m.className = "msg err"; m.textContent = traduireErreur(error.message); return; }
+  history.replaceState(null, "", location.pathname);
+  recuperation = false;
+  toast("Mot de passe modifié"); demarrer();
+};
+$("btnDeco").onclick = () => sb.auth.signOut();
+function traduireErreur(t) {
+  if (/Invalid login/i.test(t)) return "E-mail ou mot de passe incorrect.";
+  if (/already registered/i.test(t)) return "Un compte existe déjà avec cet e-mail.";
+  if (/at least/i.test(t)) return "Mot de passe trop court (8 caractères min.).";
+  if (/rate limit/i.test(t)) return "Trop de tentatives, réessaie dans quelques minutes.";
+  if (/Code de guilde/i.test(t)) return "Code de guilde incorrect.";
+  if (/duplicate key.*pseudo|profils_pseudo_key/i.test(t)) return "Ce pseudo est déjà pris.";
+  return t;
+}
+
+$("formGuilde").onsubmit = async ev => {
+  ev.preventDefault();
+  const m = $("msgGuilde"); m.className = "msg"; m.textContent = "…";
+  const { error } = await sb.rpc("rejoindre_guilde", { p_pseudo: $("pseudo").value.trim(), p_code: $("code").value.trim() });
+  if (error) { m.className = "msg err"; m.textContent = traduireErreur(error.message); return; }
+  demarrer();
+};
+
+/* ---------- démarrage ---------- */
+let enCours = false;
+async function demarrer() {
+  if (enCours || recuperation) return; enCours = true;
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    etat.session = session;
+    const connecte = !!session;
+    $("btnDeco").classList.toggle("cache", !connecte);
+    $("nav").classList.add("cache"); $("qui").textContent = "";
+    if (!connecte) { montrer("ecranConnexion"); return; }
+
+    const { data: profil } = await sb.from("profils").select("*").eq("id", session.user.id).maybeSingle();
+    etat.profil = profil;
+    if (!profil || !profil.membre) { montrer("ecranGuilde"); return; }
+
+    $("qui").textContent = profil.pseudo;
+    $("nav").classList.remove("cache");
+    if (!etat.plans.length) await chargerPlans();
+    const mes = await tout(() => sb.from("possessions").select("plan_id").eq("joueur_id", session.user.id));
+    etat.mes = new Set(mes.map(r => r.plan_id));
+    allerVue("moi");
+  } catch (e) {
+    console.error(e); toast("Erreur : " + (e.message || e), 5000);
+  } finally { enCours = false; }
+}
+
+async function chargerPlans() {
+  const r = await fetch("data/plans.json");
+  etat.plans = await r.json();
+  etat.plans.sort((a, b) => a.ordre_type - b.ordre_type || a.ordre - b.ordre);
+  etat.parId = new Map(etat.plans.map(p => [p.id, p]));
+  const tiers = [...new Set(etat.plans.map(p => p.tier).filter(Boolean))].sort((a, b) => b - a);
+  const s = $("filtreTier");
+  for (const t of tiers) s.append(el("option", { value: t, text: "Tier " + t }));
+}
+
+/* ---------- navigation ---------- */
+document.querySelectorAll("#nav button").forEach(b => b.onclick = () => allerVue(b.dataset.vue));
+$("retourJoueurs").onclick = () => allerVue("joueurs");
+function allerVue(v, joueur) {
+  etat.vue = v;
+  document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("actif", b.dataset.vue === (v === "joueur" ? "joueurs" : v)));
+  if (v === "joueurs") { montrer("ecranJoueurs"); afficherJoueurs(); return; }
+  etat.vu = v === "joueur" ? joueur : null;
+  $("titreBiblio").textContent = etat.vu ? "Bibliothèque de " + etat.vu.pseudo : "Ma bibliothèque";
+  $("retourJoueurs").classList.toggle("cache", !etat.vu);
+  $("aide").classList.toggle("cache", !!etat.vu);
+  $("comparer").classList.toggle("cache", !etat.vu);
+  if (!etat.vu) $("comparer").value = "";
+  montrer("ecranBiblio");
+  rendre();
+}
+
+/* ---------- bibliothèque ---------- */
+function ensembleAffiche() { return etat.vu ? etat.vu.set : etat.mes; }
+
+function filtrer() {
+  const q = normaliser($("recherche").value.trim());
+  const e = $("etat").value, tier = +$("filtreTier").value || 0, comp = $("comparer").value;
+  const s = ensembleAffiche();
+  return etat.plans.filter(p => {
+    if (!q && p.categorie !== etat.cat) return false;      // la recherche ignore l'onglet
+    if (!q && etat.type && p.type_code !== etat.type) return false;
+    if (q && !normaliser(p.nom_fr + " " + p.nom_en).includes(q)) return false;
+    if (tier && p.tier !== tier) return false;
+    if (e === "a" && !s.has(p.id)) return false;
+    if (e === "pas" && s.has(p.id)) return false;
+    if (comp === "luiPasMoi" && !(s.has(p.id) && !etat.mes.has(p.id))) return false;
+    if (comp === "moiPasLui" && !(etat.mes.has(p.id) && !s.has(p.id))) return false;
+    return true;
+  });
+}
+
+function rendre() {
+  const s = ensembleAffiche();
+  // onglets catégories avec compteurs
+  const ong = $("onglets"); ong.textContent = "";
+  for (const c of CATEGORIES) {
+    const tot = etat.plans.filter(p => p.categorie === c);
+    const n = tot.filter(p => s.has(p.id)).length;
+    ong.append(el("button", { class: c === etat.cat ? "actif" : "", onclick: () => { etat.cat = c; etat.type = ""; rendre(); } },
+      c, el("small", { text: n + "/" + tot.length })));
+  }
+  // types de la catégorie
+  const ty = $("types"); ty.textContent = "";
+  const types = [];
+  for (const p of etat.plans) if (p.categorie === etat.cat && !types.some(t => t.code === p.type_code)) types.push({ code: p.type_code, nom: p.type_nom });
+  ty.append(el("button", { class: etat.type ? "" : "actif", text: "Tous", onclick: () => { etat.type = ""; rendre(); } }));
+  for (const t of types) ty.append(el("button", { class: etat.type === t.code ? "actif" : "", text: t.nom, onclick: () => { etat.type = t.code; rendre(); } }));
+
+  const total = etat.plans.length, n = etat.plans.filter(p => s.has(p.id)).length;
+  $("compteur").innerHTML = "";
+  $("compteur").append(el("b", { text: n }), " / " + total + " plans (" + Math.round(n * 100 / total) + " %)");
+
+  const liste = $("liste"); liste.textContent = "";
+  liste.classList.toggle("editable", !etat.vu);
+  const plans = filtrer();
+  if (!plans.length) { liste.append(el("div", { class: "vide", text: "Aucun plan ne correspond." })); return; }
+
+  // regroupement par type
+  const groupes = new Map();
+  for (const p of plans) { if (!groupes.has(p.type_code)) groupes.set(p.type_code, []); groupes.get(p.type_code).push(p); }
+  for (const [code, ps] of groupes) {
+    const tousDuType = etat.plans.filter(p => p.type_code === code);
+    const nA = tousDuType.filter(p => s.has(p.id)).length;
+    const h = el("h3", {}, ps[0].type_nom + " ", el("span", { class: "n", text: "(" + nA + "/" + tousDuType.length + ")" }));
+    if (!etat.vu) {
+      h.append(boutonMasse("Tout cocher", ps, true), boutonMasse("Tout décocher", ps, false));
+    }
+    const g = el("div", { class: "grille" });
+    for (const p of ps) g.append(cartePlan(p, s.has(p.id)));
+    liste.append(el("div", { class: "groupe" }, h, g));
+  }
+}
+
+function cartePlan(p, possede) {
+  const c = el("div", { class: "plan" + (possede ? " a" : ""), title: p.nom_fr + (p.nom_en !== p.nom_fr ? " — " + p.nom_en : "") });
+  c.dataset.id = p.id;
+  c.append(
+    el("span", { class: "tier", text: p.tier ? "T" + p.tier : "" }),
+    el("button", { class: "qui-a", title: "Qui l'a dans la guilde ?", text: "👥", onclick: ev => { ev.stopPropagation(); quiLA(p); } }),
+    el("img", { src: IMG(p.id), alt: "", loading: "lazy", width: 72, height: 72 }),
+    el("div", { class: "nom", text: p.nom_fr })
+  );
+  if (!etat.vu) c.addEventListener("click", () => basculer(p, c));
+  return c;
+}
+
+async function basculer(p, carte) {
+  if (carte.classList.contains("envoi")) return;
+  const avait = etat.mes.has(p.id);
+  carte.classList.add("envoi");
+  const uid = etat.session.user.id;
+  const { error } = avait
+    ? await sb.from("possessions").delete().eq("joueur_id", uid).eq("plan_id", p.id)
+    : await sb.from("possessions").insert({ joueur_id: uid, plan_id: p.id });
+  carte.classList.remove("envoi");
+  if (error) { toast("Erreur : " + error.message, 4000); return; }
+  avait ? etat.mes.delete(p.id) : etat.mes.add(p.id);
+  carte.classList.toggle("a", !avait);
+  majCompteurs();
+}
+
+function majCompteurs() {
+  // re-rendu léger : on garde la position de défilement
+  const y = scrollY; rendre(); scrollTo(0, y);
+}
+
+function boutonMasse(libelle, ps, cocher) {
+  let arme = false, t;
+  const b = el("button", { class: "btn petit", text: libelle });
+  b.onclick = async () => {
+    const cibles = ps.filter(p => cocher ? !etat.mes.has(p.id) : etat.mes.has(p.id));
+    if (!cibles.length) { toast("Rien à changer"); return; }
+    if (!arme) { // 2e clic pour confirmer
+      arme = true; b.textContent = "Confirmer (" + cibles.length + ") ?"; b.classList.add("or");
+      t = setTimeout(() => { arme = false; b.textContent = libelle; b.classList.remove("or"); }, 3000);
+      return;
+    }
+    clearTimeout(t);
+    const uid = etat.session.user.id, ids = cibles.map(p => p.id);
+    const { error } = cocher
+      ? await sb.from("possessions").upsert(ids.map(id => ({ joueur_id: uid, plan_id: id })), { onConflict: "joueur_id,plan_id", ignoreDuplicates: true })
+      : await sb.from("possessions").delete().eq("joueur_id", uid).in("plan_id", ids);
+    if (error) { toast("Erreur : " + error.message, 4000); return; }
+    for (const id of ids) cocher ? etat.mes.add(id) : etat.mes.delete(id);
+    toast(ids.length + " plan(s) " + (cocher ? "ajouté(s)" : "retiré(s)"));
+    majCompteurs();
+  };
+  return b;
+}
+
+for (const id of ["recherche", "etat", "filtreTier", "comparer"]) $(id).addEventListener("input", () => rendre());
+
+/* ---------- qui a ce plan ? ---------- */
+async function quiLA(p) {
+  ouvrir(el("p", { text: "Chargement…" }));
+  const { data, error } = await sb.from("possessions").select("joueur_id, profils(pseudo)").eq("plan_id", p.id);
+  if (error) { ouvrir(el("p", { text: "Erreur : " + error.message })); return; }
+  const noms = data.map(r => r.profils?.pseudo).filter(Boolean).sort((a, b) => a.localeCompare(b));
+  const ul = el("ul");
+  for (const n of noms) ul.append(el("li", { text: n }));
+  ouvrir(
+    el("button", { class: "btn petit ferme", text: "Fermer", onclick: fermer }),
+    el("h3", { text: p.nom_fr }),
+    el("small", { text: p.type_nom + (p.tier ? " · Tier " + p.tier : "") + (p.nom_en !== p.nom_fr ? " · " + p.nom_en : "") }),
+    noms.length ? el("p", { text: noms.length + " joueur(s) l'ont :" }) : el("p", { text: "Personne dans la guilde n'a ce plan." }),
+    noms.length ? ul : null
+  );
+}
+function ouvrir(...contenu) { const f = $("fenetre"); f.textContent = ""; f.append(...contenu.filter(Boolean)); $("voile").classList.remove("cache"); }
+function fermer() { $("voile").classList.add("cache"); }
+$("voile").onclick = ev => { if (ev.target.id === "voile") fermer(); };
+addEventListener("keydown", ev => { if (ev.key === "Escape") fermer(); });
+
+/* ---------- joueurs ---------- */
+let joueursCache = [];
+async function afficherJoueurs() {
+  $("listeJoueurs").textContent = "Chargement…";
+  const { data, error } = await sb.from("profils").select("id, pseudo, possessions(count)").eq("membre", true).order("pseudo");
+  if (error) { $("listeJoueurs").textContent = "Erreur : " + error.message; return; }
+  joueursCache = data;
+  rendreJoueurs();
+}
+function rendreJoueurs() {
+  const q = normaliser($("rechercheJoueur").value);
+  const total = etat.plans.length, box = $("listeJoueurs"); box.textContent = "";
+  const liste = joueursCache.filter(j => normaliser(j.pseudo).includes(q));
+  $("nbJoueurs").textContent = joueursCache.length + " membre(s)";
+  for (const j of liste) {
+    const n = j.possessions?.[0]?.count || 0, pc = Math.round(n * 100 / total);
+    const jauge = el("div", { class: "jauge" }, el("i")); jauge.firstChild.style.width = pc + "%";
+    box.append(el("div", { class: "joueur", onclick: () => voirJoueur(j) },
+      el("div", { class: "p", text: j.pseudo + (j.id === etat.session.user.id ? " (moi)" : "") }),
+      el("small", { text: n + " / " + total + " plans · " + pc + " %" }), jauge));
+  }
+}
+$("rechercheJoueur").addEventListener("input", rendreJoueurs);
+async function voirJoueur(j) {
+  if (j.id === etat.session.user.id) { allerVue("moi"); return; }
+  toast("Chargement de " + j.pseudo + "…");
+  const rows = await tout(() => sb.from("possessions").select("plan_id").eq("joueur_id", j.id));
+  allerVue("joueur", { id: j.id, pseudo: j.pseudo, set: new Set(rows.map(r => r.plan_id)) });
+  scrollTo(0, 0);
+}
+
+/* ---------- événements d'auth ---------- */
+let recuperation = /type=recovery/.test(location.hash);
+sb.auth.onAuthStateChange((evt) => {
+  if (evt === "PASSWORD_RECOVERY") recuperation = true;
+  if (recuperation) { montrer("ecranNouveauMdp"); return; }
+  if (evt === "SIGNED_IN" || evt === "SIGNED_OUT") setTimeout(demarrer, 0);
+});
+demarrer();
+</script>
+</body>
+</html>
